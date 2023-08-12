@@ -18,7 +18,6 @@ public class ItemValidator implements Validator {
 
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
-    private final MaterialRepository materialRepository;
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
 
@@ -36,7 +35,6 @@ public class ItemValidator implements Validator {
         validateDescription(item, errors);
         validateImages(item, errors);
         validateCategories(item, errors);
-        validateMaterials(item ,errors);
         validateColors(item, errors);
         validateHasPrint(item, errors);
         validateCreatedAt(item, errors);
@@ -190,43 +188,6 @@ public class ItemValidator implements Validator {
                 }
 
                 parentId = categoryRepository.findParentIdById(parentId.get());
-            }
-        }
-    }
-
-    public void validateMaterials(@NonNull Item item, @NonNull Errors errors) {
-
-        List<Material> materials = item.getMaterials();
-
-        if(materials == null) {
-            errors.rejectValue(
-                    "materials",
-                    "item.materials.null",
-                    "Список материалов товара имеет недопустимое значение, свяжитесь с разработчиком"
-            );
-            return;
-        }
-
-        materials
-                .stream()
-                .filter(material -> !materialRepository.existsById(material.getId()))
-                .findAny()
-                .ifPresent(value -> errors.rejectValue(
-                        "materials",
-                        "item.materials.dontExist",
-                        "Среди выбранных материалов есть несуществующие материалы"
-                ));
-
-        for (int i = 0; i < materials.size() - 1; i++) {
-            for (int j = i + 1; j < materials.size(); j++) {
-                if (materials.get(i).getId().equals(materials.get(j).getId())) {
-                    errors.rejectValue(
-                            "materials",
-                            "item.materials.duplicated",
-                            "Один и тот же материал указан несколько раз"
-                    );
-                    return;
-                }
             }
         }
     }

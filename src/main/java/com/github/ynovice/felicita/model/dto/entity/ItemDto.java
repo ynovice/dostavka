@@ -19,7 +19,6 @@ public class ItemDto {
 
     private List<ImageDto> images;
     private Set<CategoryDto> categories;
-    private Set<MaterialDto> materials;
     private Set<ColorDto> colors;
 
     private Boolean hasPrint;
@@ -49,13 +48,6 @@ public class ItemDto {
                 item.getCategories()
                         .stream()
                         .map(CategoryDto::fromEntity)
-                        .collect(Collectors.toSet())
-        );
-
-        dto.setMaterials(
-                item.getMaterials()
-                        .stream()
-                        .map(MaterialDto::fromEntity)
                         .collect(Collectors.toSet())
         );
 

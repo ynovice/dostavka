@@ -151,22 +151,6 @@ function ItemPage() {
                                 </div>
                             </div>
                         }
-                        {item["materials"].length > 0 &&
-                            <div className="property">
-                                <div className="name">Материалы</div>
-                                <div className="values">
-                                    {item["materials"].map((material, index) => {
-                                        return (
-                                            <React.Fragment key={material["id"]}>
-                                                <a href={"/catalog?materialsIds=" + material["id"]}
-                                                   className="link">{material["name"]}</a>
-                                                {index !== item["materials"].length - 1 && ", "}
-                                            </React.Fragment>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        }
                         {item["colors"].length > 0 &&
                             <div className="property">
                                 <div className="name">Цвета</div>

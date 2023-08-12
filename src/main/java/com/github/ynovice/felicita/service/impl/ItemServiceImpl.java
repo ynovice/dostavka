@@ -38,7 +38,6 @@ public class ItemServiceImpl implements ItemService {
 
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
-    private final MaterialRepository materialRepository;
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
     private final SizeQuantityRepository sizeQuantityRepository;
@@ -245,7 +244,6 @@ public class ItemServiceImpl implements ItemService {
         createAndLinkSizesQuantities(dto.getSizesQuantities(), item);
 
         item.setCategories(getEntitiesReferences(dto.getCategoriesIds(), categoryRepository));
-        item.setMaterials(getEntitiesReferences(dto.getMaterialsIds(), materialRepository));
         item.setColors(getEntitiesReferences(dto.getColorsIds(), colorRepository));
     }
 }

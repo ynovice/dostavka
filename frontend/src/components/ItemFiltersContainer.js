@@ -53,12 +53,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
         Api.getAllColors().then(retrievedColors => setExistingColors(retrievedColors));
         }, []);
 
-    const [existingMaterials, setExistingMaterials] = useState([]);
-    const [chosenMaterialsIds, setChosenMaterialsIds] = useState([]);
-    useEffect(() => {
-        Api.getAllMaterials().then(retrievedMaterials => setExistingMaterials(retrievedMaterials));
-        }, []);
-
 
     const [hasPrint, setHasPrint] = useState(null);
 
@@ -84,7 +78,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
         if(chosenCategoriesIds.length > 0) searchParamsDto.categoriesIds = chosenCategoriesIds;
         if(chosenSizesIds.length > 0) searchParamsDto.sizesIds = arrToStr(chosenSizesIds);
         if(chosenColorsIds.length > 0) searchParamsDto.colorsIds = arrToStr(chosenColorsIds);
-        if(chosenMaterialsIds.length > 0) searchParamsDto.materialsIds = arrToStr(chosenMaterialsIds);
 
         return searchParamsDto;
     }
@@ -148,11 +141,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
                                     title={"Цвет"}
                                     options={existingColors}
                                     setIds={setChosenColorsIds}/>
-
-                <ItemCheckboxFilter getParamName={"materialsIds"}
-                                    title={"Материал"}
-                                    options={existingMaterials}
-                                    setIds={setChosenMaterialsIds}/>
 
                 <ItemRadioFilter getParamName={"hasPrint"}
                                  title={"Принт"}

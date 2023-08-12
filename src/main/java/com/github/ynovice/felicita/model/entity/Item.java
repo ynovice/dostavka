@@ -46,17 +46,6 @@ public class Item {
             cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}
     )
     @JoinTable(
-            name = "items_materials",
-            joinColumns = {@JoinColumn(name = "item_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "material_id", referencedColumnName = "id")}
-    )
-    private List<Material> materials;
-
-    @ManyToMany(
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}
-    )
-    @JoinTable(
             name = "items_colors",
             joinColumns = {@JoinColumn(name = "item_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "color_id", referencedColumnName = "id")}

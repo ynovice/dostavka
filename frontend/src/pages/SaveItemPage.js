@@ -29,14 +29,6 @@ function SaveItemPage() {
             .catch(() => alert("Ошибка при получении списка категорий, свяжитесь с разработчиком"));
     }, []);
 
-    const [materials, setMaterials] = useState([]);
-    const [selectedMaterialsIds, setSelectedMaterialsIds] = useState([]);
-    useEffect(() => {
-        Api.getAllMaterials()
-            .then(retrievedMaterials => setMaterials(retrievedMaterials))
-            .catch(() => alert("Ошибка при получении списка материалов, свяжитесь с разработчиком"));
-    }, []);
-
 
     const [colors, setColors] = useState([]);
     const [selectedColorsIds, setSelectedColorsIds] = useState([]);
@@ -146,7 +138,6 @@ function SaveItemPage() {
 
         const modifyItemRequestDto = {
             name, description, price, hasPrint, imagesIds, categoriesIds,
-            materialsIds: selectedMaterialsIds,
             colorsIds: selectedColorsIds,
             sizesQuantities: sizesQuantitiesDtos
         };
@@ -199,7 +190,6 @@ function SaveItemPage() {
                 setPrice(retrievedItem["price"]);
                 setHasPrint(retrievedItem["hasPrint"]);
 
-                setSelectedMaterialsIds(retrievedItem["materials"].map(material => material["id"]));
                 setSelectedColorsIds(retrievedItem["colors"].map(color => color["id"]));
 
                 setSizesQuantities(retrievedItem["sizesQuantities"].map(sq => {
@@ -323,12 +313,6 @@ function SaveItemPage() {
                                     existingCategoriesTrees={categoriesTrees}
                                     selectedCategoriesSequences={selectedCategoriesSequences}
                                     setSelectedCategoriesSequences={setSelectedCategoriesSequences}/>
-
-            <div className="section block-title">Состав (материалы)</div>
-            <ItemPropertySelector emptyListMessage="Состав не указан"
-                                  selectedIds={selectedMaterialsIds}
-                                  setSelectedIds={setSelectedMaterialsIds}
-                                  propertySource={materials}/>
 
             <div className="section block-title">Цвета</div>
             <ItemPropertySelector emptyListMessage="Цвета не указаны"

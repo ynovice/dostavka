@@ -11,7 +11,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("SELECT DISTINCT i FROM Item i " +
             "LEFT JOIN i.sizesQuantities sq " +
-            "LEFT JOIN i.materials mrl " +
             "LEFT JOIN i.categories ctg " +
             "LEFT JOIN i.colors clr " +
             "WHERE (i.active = true) " +
@@ -19,7 +18,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "AND (:#{#filterParams.filterByPriceFrom} = false or i.price >= :#{#filterParams.priceFrom}) " +
             "AND (:#{#filterParams.filterByPriceTo} = false or i.price <= :#{#filterParams.priceTo}) " +
             "AND (:#{#filterParams.filterBySizes} = false or sq.size.id IN :#{#filterParams.sizesIds}) " +
-            "AND (:#{#filterParams.filterByMaterials} = false or mrl.id IN :#{#filterParams.materialsIds}) " +
             "AND (:#{#filterParams.filterByCategories} = false or ctg.id IN :#{#filterParams.categoriesIds}) " +
             "AND (:#{#filterParams.filterByColors} = false or clr.id IN :#{#filterParams.colorsIds}) " +
             "ORDER BY i.createdAt")
