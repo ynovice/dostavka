@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${FELICITA_GOOGLE_CLIENT_ID}
+            client-secret: ${FELICITA_GOOGLE_CLIENT_SECRET}
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+
+app:
+  cors:
+    maxAgeSecs: 3600
+    allowedOrigins:
+      - http://localhost:3000
+  oauth2:
+    redirectUri: "http://localhost:3000/"
+  img:
+    uploadDirectory: "./src/main/resources/images"
