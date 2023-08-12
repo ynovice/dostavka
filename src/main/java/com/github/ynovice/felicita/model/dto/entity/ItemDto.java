@@ -21,7 +21,6 @@ public class ItemDto {
     private Set<CategoryDto> categories;
     private Set<ColorDto> colors;
 
-    private Boolean hasPrint;
     private ZonedDateTime createdAt;
     private Integer price;
     private Boolean active;
@@ -58,7 +57,6 @@ public class ItemDto {
                         .collect(Collectors.toSet())
         );
 
-        dto.setHasPrint(item.getHasPrint());
         dto.setCreatedAt(item.getCreatedAt());
         dto.setPrice(item.getPrice());
         dto.setActive(item.getActive());

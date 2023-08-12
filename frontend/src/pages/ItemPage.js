@@ -167,13 +167,6 @@ function ItemPage() {
                                 </div>
                             </div>
                         }
-                        <div className="property">
-                            <div className="name">Принт</div>
-                            <div className="values">
-                                <a href={"/catalog?hasPrint=" + item["hasPrint"]}
-                                   className="link">{item["hasPrint"] ? "Да" : "Нет"}</a>
-                            </div>
-                        </div>
                     </div>
                     <div>
                         <div className="property">

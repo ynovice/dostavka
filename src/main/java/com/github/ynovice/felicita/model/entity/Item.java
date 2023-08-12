@@ -52,8 +52,6 @@ public class Item {
     )
     private List<Color> colors;
 
-    private Boolean hasPrint;
-
     @Column(nullable = false)
     private ZonedDateTime createdAt;
 

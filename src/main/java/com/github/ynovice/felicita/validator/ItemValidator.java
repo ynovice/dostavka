@@ -36,7 +36,6 @@ public class ItemValidator implements Validator {
         validateImages(item, errors);
         validateCategories(item, errors);
         validateColors(item, errors);
-        validateHasPrint(item, errors);
         validateCreatedAt(item, errors);
         validatePrice(item, errors);
         validateSizesQuantities(item, errors);
@@ -227,16 +226,6 @@ public class ItemValidator implements Validator {
                 }
             }
         }
-    }
-
-    public void validateHasPrint(@NonNull Item item, @NonNull Errors errors) {
-
-        if(item.getHasPrint() == null)
-            errors.rejectValue(
-                    "hasPrint",
-                    "item.hasPrint.null",
-                    "Поле hasPrint имеет недопустимое значение, свяжитесь с разработчиком"
-            );
     }
 
     public void validateCreatedAt(@NonNull Item item, @NonNull Errors errors) {

@@ -17,7 +17,6 @@ public class ModifyItemRequestDto {
 
     private List<Long> materialsIds;
     private List<Long> colorsIds;
-    private Boolean hasPrint;
 
     private Integer price;
 

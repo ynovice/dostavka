@@ -70,16 +70,9 @@ public class ItemServiceTest {
         assertNotNull(item.getCategories());
         assertEquals(requestDto.getCategoriesIds().size(), item.getCategories().size());
 
-        // materials
-        assertNotNull(item.getMaterials());
-        assertEquals(requestDto.getMaterialsIds().size(), item.getMaterials().size());
-
         // colors
         assertNotNull(item.getColors());
         assertEquals(requestDto.getColorsIds().size(), item.getColors().size());
-
-        // hasPrint
-        assertEquals(requestDto.getHasPrint(), item.getHasPrint());
 
         // createdAt
         assertNotNull(item.getCreatedAt());
@@ -137,7 +130,6 @@ public class ItemServiceTest {
 
         requestDto.setMaterialsIds(new ArrayList<>());
         requestDto.setColorsIds(new ArrayList<>());
-        requestDto.setHasPrint(false);
 
         requestDto.setPrice(5000);
 

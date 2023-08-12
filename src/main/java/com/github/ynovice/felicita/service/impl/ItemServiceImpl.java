@@ -237,7 +237,6 @@ public class ItemServiceImpl implements ItemService {
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
 
-        item.setHasPrint(dto.getHasPrint());
         item.setPrice(dto.getPrice());
 
         bidirectionalAttachImagesToItem(dto.getImagesIds(), item);

@@ -113,7 +113,6 @@ function SaveItemPage() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
-    const [hasPrint, setHasPrint] = useState(false);
 
 
     const [fieldErrors, setFieldErrors] = useState([]);
@@ -137,7 +136,7 @@ function SaveItemPage() {
 
 
         const modifyItemRequestDto = {
-            name, description, price, hasPrint, imagesIds, categoriesIds,
+            name, description, price, imagesIds, categoriesIds,
             colorsIds: selectedColorsIds,
             sizesQuantities: sizesQuantitiesDtos
         };
@@ -188,7 +187,6 @@ function SaveItemPage() {
                 setName(retrievedItem["name"]);
                 setDescription(retrievedItem["description"]);
                 setPrice(retrievedItem["price"]);
-                setHasPrint(retrievedItem["hasPrint"]);
 
                 setSelectedColorsIds(retrievedItem["colors"].map(color => color["id"]));
 
@@ -325,17 +323,6 @@ function SaveItemPage() {
                                      selectedSizesQuantities={sizesQuantities}
                                      setSelectedSizesQuantities={setSizesQuantities}
                                      existingSizes={sizes}/>
-
-            <div className="section block-title">Прочее</div>
-            <div className="section form-row">
-                <label htmlFor="has-print">С принтом</label>
-                <input type="checkbox"
-                       id="has-print"
-                       checked={hasPrint}
-                       value={String(hasPrint)}
-                       onChange={() => setHasPrint(!hasPrint)}
-                />
-            </div>
 
             <div className="section">
                 <input type="button"

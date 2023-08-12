@@ -7,9 +7,6 @@ import java.util.List;
 @Getter
 public class ItemFilterParamsDto {
 
-    private Boolean hasPrint;
-    private boolean filterByHasPrint = false;
-
     private Integer priceFrom;
     private boolean filterByPriceFrom = false;
 
@@ -28,10 +25,6 @@ public class ItemFilterParamsDto {
     private List<Long> colorsIds;
     private boolean filterByColors = false;
 
-    public void setHasPrint(Boolean hasPrint) {
-        this.hasPrint = hasPrint;
-        filterByHasPrint = hasPrint != null;
-    }
 
     public void setPriceFrom(Integer priceFrom) {
         this.priceFrom = priceFrom;

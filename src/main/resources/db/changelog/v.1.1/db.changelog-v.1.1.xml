@@ -16,5 +16,16 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="remove-hasprint-attribute" author="ynovice">
+        <sqlFile dbms="postgresql"
+                 relativeToChangelogFile="true"
+                 path="10-remove-hasprint-attribute.sql"/>
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     relativeToChangelogFile="true"
+                     path="10-add-hasprint-attribute.sql"/>
+        </rollback>
+    </changeSet>
+
 
 </databaseChangeLog>

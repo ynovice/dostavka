@@ -54,8 +54,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
         }, []);
 
 
-    const [hasPrint, setHasPrint] = useState(null);
-
     const handleApplyFiltersClick = () => {
 
         const searchParamsDto = buildNewSearchParams();
@@ -73,7 +71,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
 
         if(priceFrom !== "") searchParamsDto.priceFrom = priceFrom;
         if(priceTo !== "") searchParamsDto.priceTo = priceTo;
-        if(hasPrint !== null) searchParamsDto.hasPrint = hasPrint;
 
         if(chosenCategoriesIds.length > 0) searchParamsDto.categoriesIds = chosenCategoriesIds;
         if(chosenSizesIds.length > 0) searchParamsDto.sizesIds = arrToStr(chosenSizesIds);
@@ -141,16 +138,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
                                     title={"Цвет"}
                                     options={existingColors}
                                     setIds={setChosenColorsIds}/>
-
-                <ItemRadioFilter getParamName={"hasPrint"}
-                                 title={"Принт"}
-                                 chosenValue={hasPrint}
-                                 setChosenValue={setHasPrint}
-                                 options={[
-                                     {name: "С принтом", value: "true"},
-                                     {name: "Без принта", value: "false"},
-                                     {name: "Любое", value: null}
-                                 ]}/>
 
                 <input type="button"
                        className="button"
