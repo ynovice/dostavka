@@ -1,12 +1,13 @@
 package com.github.ynovice.felicita.service.impl;
 
-import com.github.ynovice.felicita.exception.InternalServerError;
 import com.github.ynovice.felicita.exception.InvalidEntityException;
 import com.github.ynovice.felicita.exception.NotFoundException;
-import com.github.ynovice.felicita.model.dto.request.CreateSizeQuantityRequestDto;
 import com.github.ynovice.felicita.model.dto.request.ItemFilterParamsDto;
 import com.github.ynovice.felicita.model.dto.request.ModifyItemRequestDto;
-import com.github.ynovice.felicita.model.entity.*;
+import com.github.ynovice.felicita.model.entity.Image;
+import com.github.ynovice.felicita.model.entity.Item;
+import com.github.ynovice.felicita.model.entity.Reserve;
+import com.github.ynovice.felicita.model.entity.ReserveEntry;
 import com.github.ynovice.felicita.repository.*;
 import com.github.ynovice.felicita.service.ImageService;
 import com.github.ynovice.felicita.service.ItemService;
@@ -39,8 +40,6 @@ public class ItemServiceImpl implements ItemService {
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
     private final ColorRepository colorRepository;
-    private final SizeRepository sizeRepository;
-    private final SizeQuantityRepository sizeQuantityRepository;
     private final ReserveRepository reserveRepository;
     private final ReserveEntryRepository reserveEntryRepository;
 
@@ -74,7 +73,6 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(NotFoundException::new);
 
         List<Image> itemImagesListCopy = new ArrayList<>(item.getImages());
-        List<SizeQuantity> itemSizesQuantitiesCopy = new ArrayList<>(item.getSizesQuantities());
 
         injectDtoDataToItem(requestDto, item);
 
@@ -90,8 +88,6 @@ public class ItemServiceImpl implements ItemService {
                 .filter(image -> !item.getImages().contains(image))
                 .forEach(imageService::delete);
 
-        sizeQuantityRepository.deleteAll(itemSizesQuantitiesCopy);
-
         itemRepository.save(item);
         imageRepository.saveAll(item.getImages());
 
@@ -105,25 +101,11 @@ public class ItemServiceImpl implements ItemService {
 
             Item item = reserveEntry.getItem();
 
-            for(SizeQuantity reserveEntrySQ : reserveEntry.getSizesQuantities()) {
-
-                Size size = reserveEntrySQ.getSize();
-
-                SizeQuantity itemSQ = item.getSizeQuantityBySize(size).orElseThrow(
-                        () -> new InternalServerError("Произошла ошибка при попытке зарезервировать товар"));
-
-                itemSQ.updateQuantity(-reserveEntrySQ.getQuantity());
-
-                if(itemSQ.getQuantity() <= 0) {
-                    item.getSizesQuantities().remove(itemSQ);
-                    sizeQuantityRepository.delete(itemSQ);
-                }
-            }
+            item.updateQuantity(-reserveEntry.getQuantity());
 
             item.setActive(shouldBeActive(item));
             itemRepository.save(item);
         }
-
     }
 
     @Override
@@ -177,9 +159,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private boolean shouldBeActive(@NonNull Item item) {
-        return item.getSizesQuantities()
-                .stream()
-                .anyMatch(sizeQuantity -> sizeQuantity.getQuantity() > 0);
+        return item.getQuantity() > 0;
     }
 
     private <T> List<T> getEntitiesReferences(Collection<Long> entitiesIds,
@@ -213,34 +193,15 @@ public class ItemServiceImpl implements ItemService {
         item.setImages(imagesReferences);
     }
 
-    private void createAndLinkSizesQuantities(List<CreateSizeQuantityRequestDto> createSqDtos,
-                                              @NonNull Item item) {
-
-        List<SizeQuantity> createdSizesQuantities = new ArrayList<>();
-
-        if(createSqDtos == null) {
-            item.setSizesQuantities(createdSizesQuantities);
-            return;
-        }
-
-        for(CreateSizeQuantityRequestDto createSqDto : createSqDtos) {
-            Size size = sizeRepository.getReferenceById(createSqDto.getSizeId());
-            Integer quantity = createSqDto.getQuantity();
-            createdSizesQuantities.add(new SizeQuantity(size, quantity, item));
-        }
-
-        item.setSizesQuantities(createdSizesQuantities);
-    }
-
     private void injectDtoDataToItem(@NonNull ModifyItemRequestDto dto, @NonNull Item item) {
 
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
 
         item.setPrice(dto.getPrice());
+        item.setQuantity(dto.getQuantity());
 
         bidirectionalAttachImagesToItem(dto.getImagesIds(), item);
-        createAndLinkSizesQuantities(dto.getSizesQuantities(), item);
 
         item.setCategories(getEntitiesReferences(dto.getCategoriesIds(), categoryRepository));
         item.setColors(getEntitiesReferences(dto.getColorsIds(), colorRepository));

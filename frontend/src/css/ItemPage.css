@@ -79,16 +79,6 @@
     font-weight: 700;
 }
 
-.ItemPage .property .size-values {
-    display: flex;
-    gap: 30px;
-}
-
-.ItemPage .property .size-values .other-sizes {
-    display: flex;
-    gap: 8px;
-}
-
 .ItemPage .CartWidget {
     padding-bottom: 40px;
 }

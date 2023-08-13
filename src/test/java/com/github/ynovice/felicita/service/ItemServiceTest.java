@@ -2,9 +2,7 @@ package com.github.ynovice.felicita.service;
 
 import com.github.ynovice.felicita.Application;
 import com.github.ynovice.felicita.model.dto.request.ModifyItemRequestDto;
-import com.github.ynovice.felicita.model.dto.request.CreateSizeQuantityRequestDto;
 import com.github.ynovice.felicita.model.entity.Item;
-import com.github.ynovice.felicita.model.entity.SizeQuantity;
 import com.github.ynovice.felicita.repository.ItemRepository;
 import com.github.ynovice.felicita.validator.ItemValidator;
 import lombok.NonNull;
@@ -81,9 +79,7 @@ public class ItemServiceTest {
         assertEquals(shouldBeActive(requestDto), item.getActive());
 
         // sizesQuantities
-        assertNotNull(item.getSizesQuantities());
-        assertEquals(requestDto.getSizesQuantities().size(), item.getSizesQuantities().size());
-        assertTrue(conform(requestDto.getSizesQuantities(), item.getSizesQuantities()));
+        assertEquals(requestDto.getQuantity(), item.getQuantity());
 
         // cartEntries
         assertNotNull(item.getCartEntries());
@@ -99,24 +95,7 @@ public class ItemServiceTest {
     }
 
     private boolean shouldBeActive(@NonNull ModifyItemRequestDto modifyItemRequestDto) {
-
-        List<CreateSizeQuantityRequestDto> sizesQuantitiesDtos = modifyItemRequestDto.getSizesQuantities();
-
-        if(sizesQuantitiesDtos == null) return false;
-
-        return sizesQuantitiesDtos
-                .stream()
-                .anyMatch(sqd -> sqd.getQuantity() > 0);
-    }
-
-    private boolean conform(List<CreateSizeQuantityRequestDto> dtos, List<SizeQuantity> entities) {
-
-        return dtos
-                .stream()
-                .allMatch(dto -> entities
-                        .stream()
-                        .anyMatch(entity -> entity.getSizeId().equals(dto.getSizeId())
-                                && entity.getQuantity().equals(dto.getQuantity())));
+        return modifyItemRequestDto.getQuantity() > 0;
     }
 
     private ModifyItemRequestDto validCreateItemRequestDto() {
@@ -128,12 +107,11 @@ public class ItemServiceTest {
         requestDto.setImagesIds(Collections.emptyList());
         requestDto.setCategoriesIds(Collections.emptyList());
 
-        requestDto.setMaterialsIds(new ArrayList<>());
         requestDto.setColorsIds(new ArrayList<>());
 
         requestDto.setPrice(5000);
 
-        requestDto.setSizesQuantities(Collections.emptyList());
+        requestDto.setQuantity(0);
 
         return requestDto;
     }

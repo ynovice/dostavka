@@ -24,7 +24,7 @@ public class ItemDto {
     private ZonedDateTime createdAt;
     private Integer price;
     private Boolean active;
-    private List<SizeQuantityDto> sizesQuantities;
+    private Integer quantity;
 
     public static ItemDto fromEntity(Item item) {
 
@@ -60,13 +60,7 @@ public class ItemDto {
         dto.setCreatedAt(item.getCreatedAt());
         dto.setPrice(item.getPrice());
         dto.setActive(item.getActive());
-
-        dto.setSizesQuantities(
-                item.getSizesQuantities()
-                        .stream()
-                        .map(SizeQuantityDto::fromEntity)
-                        .toList()
-        );
+        dto.setQuantity(item.getQuantity());
 
         return dto;
     }

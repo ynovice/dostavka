@@ -51,10 +51,6 @@ function ItemPage() {
     const [displayedImageIndex, setDisplayedImageIndex] = useState(0);
     const getImageIdByIndex = i => item["images"][i]["id"];
 
-    const [chosenSizeIndex, setChosenSizeIndex] = useState(0);
-    const getSizeByIndex = i => item["sizesQuantities"][i]["size"];
-    const getQuantityBySizeIndex = i => item["sizesQuantities"][i]["quantity"];
-
     const [similarItemsPage, setSimilarItemsPage] = useState([]);
 
     useEffect(() => {
@@ -173,36 +169,11 @@ function ItemPage() {
                             <div className="name">Цена</div>
                             <div className="price-value">{item["price"] + "₽"}</div>
                         </div>
-
-                        {item["sizesQuantities"].length > 0 &&
-                            <div className="property">
-                                <div className="name">Размер</div>
-                                <div className="size-values">
-                                    <div className="chosen-size">{getSizeByIndex(chosenSizeIndex)["name"]}</div>
-                                    {item["sizesQuantities"].length > 1 &&
-                                        <div className="other-sizes">
-                                            <span>Другие:</span>
-                                            {item["sizesQuantities"].map((sq, i) => {
-                                                return i !== chosenSizeIndex &&
-                                                    <span key={sq["size"]["id"]}
-                                                          className="link"
-                                                          onClick={() => setChosenSizeIndex(i)}>
-                                                    {sq["size"]["name"]}
-                                                </span>
-                                            })}
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
                     </div>
                 </div>
 
-                {item["id"] && item["sizesQuantities"].length > 0 ?
-                    <CartWidget item={item}
-                                chosenSizeId={getSizeByIndex(chosenSizeIndex)["id"]}
-                                maxQuantity={getQuantityBySizeIndex(chosenSizeIndex)}/> :
-                    <CartWidget item={item} chosenSizeId={null} maxQuantity={0}/>
+                {item["id"] && item["quantity"] > 0 &&
+                    <CartWidget item={item}/>
                 }
 
                 {similarItemsPage["items"] && similarItemsPage["items"].length > 0 &&

@@ -4,7 +4,10 @@ import com.github.ynovice.felicita.exception.BadRequestException;
 import com.github.ynovice.felicita.exception.NotAuthorizedException;
 import com.github.ynovice.felicita.exception.NotFoundException;
 import com.github.ynovice.felicita.model.entity.*;
-import com.github.ynovice.felicita.repository.*;
+import com.github.ynovice.felicita.repository.CartEntryRepository;
+import com.github.ynovice.felicita.repository.CartRepository;
+import com.github.ynovice.felicita.repository.ReserveEntryRepository;
+import com.github.ynovice.felicita.repository.ReserveRepository;
 import com.github.ynovice.felicita.service.CartService;
 import com.github.ynovice.felicita.service.ItemService;
 import com.github.ynovice.felicita.service.ReserveService;
@@ -35,7 +38,6 @@ public class ReserveServiceImpl implements ReserveService {
 
     private final CartRepository cartRepository;
     private final CartEntryRepository cartEntryRepository;
-    private final SizeQuantityRepository sizeQuantityRepository;
     private final ReserveEntryRepository reserveEntryRepository;
 
     @Override
@@ -53,13 +55,8 @@ public class ReserveServiceImpl implements ReserveService {
         cart.setTotalItems(0);
         cart.setTotalPrice(0);
 
-        for(CartEntry cartEntry : cart.getEntries()) {
-
+        for(CartEntry cartEntry : cart.getEntries())
             createAndLinkReserveEntry(cartEntry, reserve);
-
-            cartEntry.getSizesQuantities().clear();
-            sizeQuantityRepository.deleteAllByCartEntry(cartEntry);
-        }
 
         cart.getEntries().clear();
         cartEntryRepository.deleteAllByCart(cart);
@@ -81,16 +78,7 @@ public class ReserveServiceImpl implements ReserveService {
 
             Item item = reserveEntry.getItem();
 
-            for(SizeQuantity reserveEntrySQ : reserveEntry.getSizesQuantities()) {
-
-                Size size = reserveEntrySQ.getSize();
-
-                SizeQuantity itemSQ = item.getSizeQuantityBySize(size)
-                        .orElseGet(() -> item.createAndLinkSizeQuantity(size));
-
-                itemSQ.updateQuantity(reserveEntrySQ.getQuantity());
-
-            }
+            item.updateQuantity(reserveEntry.getQuantity());
 
             itemService.save(item);
         }
@@ -154,11 +142,8 @@ public class ReserveServiceImpl implements ReserveService {
         reserve.setTotalItems(0);
 
         for(ReserveEntry reserveEntry : reserve.getEntries()) {
-
-            for(SizeQuantity reserveEntrySQ : reserveEntry.getSizesQuantities()) {
-                reserve.updateTotalPrice(reserveEntry.getPricePerItem() * reserveEntrySQ.getQuantity());
-                reserve.updateTotalItems(reserveEntrySQ.getQuantity());
-            }
+            reserve.updateTotalPrice(reserveEntry.getPricePerItem() * reserveEntry.getQuantity());
+            reserve.updateTotalItems(reserveEntry.getQuantity());
         }
     }
 
@@ -181,19 +166,10 @@ public class ReserveServiceImpl implements ReserveService {
     private void createAndLinkReserveEntry(@NonNull CartEntry cartEntry, @NonNull Reserve reserve) {
 
         ReserveEntry reserveEntry = new ReserveEntry();
-        reserveEntry.setSizesQuantities(new ArrayList<>());
         reserveEntry.setItem(cartEntry.getItem());
         reserveEntry.setPricePerItem(cartEntry.getItem().getPrice());
 
-        for(SizeQuantity cartEntrySQ : cartEntry.getSizesQuantities()) {
-
-            SizeQuantity reserveEntrySQ = new SizeQuantity();
-            reserveEntrySQ.setQuantity(cartEntrySQ.getQuantity());
-            reserveEntrySQ.setSize(cartEntrySQ.getSize());
-
-            reserveEntrySQ.setReserveEntry(reserveEntry);
-            reserveEntry.getSizesQuantities().add(reserveEntrySQ);
-        }
+        reserveEntry.setQuantity(cartEntry.getQuantity());
 
         reserveEntry.setReserve(reserve);
         reserve.getEntries().add(reserveEntry);

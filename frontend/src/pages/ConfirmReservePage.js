@@ -55,39 +55,34 @@ function ConfirmReservePage() {
                         Api.getImageUrlByImageId(item["images"][0]["id"]) :
                         "/ui/item-placeholder.png";
 
-                    return cartEntry["sizesQuantities"].map(sq => {
+                    return (
+                        <div key={"cart-entry-" + cartEntry["id"]} className="cart-item">
 
-                        return (
-                            <div key={"cart-sq-" + sq["size"]["id"]} className="cart-item">
+                            <div className="image-container">
+                                <img src={imageUrl} alt={item["name"]}/>
+                            </div>
 
-                                <div className="image-container">
-                                    <img src={imageUrl} alt={item["name"]}/>
+                            <div className="cart-item-info">
+
+                                <div className="cart-item-name">{item["name"]}</div>
+                                <div className="cart-item-total-price">
+                                    {item["price"] * cartEntry["quantity"]}₽
                                 </div>
 
-                                <div className="cart-item-info">
+                                <div className="cart-item-controls noselect disabled">
 
-                                    <div className="cart-item-name">{item["name"]}</div>
-                                    <div className="cart-item-size">{sq["size"]["name"]}</div>
-                                    <div className="cart-item-total-price">
-                                        {item["price"] * sq["quantity"]}₽
-                                    </div>
+                                    <div className="left"></div>
+                                    <div className="right">
 
-                                    <div className="cart-item-controls noselect disabled">
-
-                                        <div className="left"></div>
-                                        <div className="right">
-
-                                            <div className="counter-controls">
-                                                <span className="noselect disabled">{sq["quantity"]}</span>
-                                            </div>
+                                        <div className="counter-controls">
+                                            <span className="noselect disabled">{cartEntry["quantity"]}</span>
                                         </div>
-
                                     </div>
+
                                 </div>
                             </div>
-                        );
-                    });
-
+                        </div>
+                    );
                 })}
             </div>
 

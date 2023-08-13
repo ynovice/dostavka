@@ -8,9 +8,9 @@ public interface CartService {
 
     Cart getByPrincipal(@NonNull OAuth2User principal);
 
-    Cart appendOneItemBySize(Long itemId, Long sizeId, @NonNull OAuth2User oAuth2User);
+    Cart appendOneItem(Long itemId, @NonNull OAuth2User oAuth2User);
 
-    Cart removeItemsBySize(Long itemId, Long sizeId, @NonNull OAuth2User oAuth2User);
+    Cart removeItems(Long itemId, @NonNull OAuth2User oAuth2User);
 
-    Cart removeItemsBySize(Long itemId, Long sizeId, @NonNull OAuth2User oAuth2User, Integer amount);
+    Cart removeItems(Long itemId, @NonNull OAuth2User oAuth2User, Integer amount);
 }

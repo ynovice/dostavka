@@ -25,29 +25,26 @@ public class CartController {
     }
 
     @PutMapping(params = "action=append")
-    public ResponseEntity<CartDto> appendOneItemBySize(@RequestParam Long itemId,
-                                                       @RequestParam Long sizeId,
-                                                       @AuthenticationPrincipal OAuth2User oAuth2User) {
+    public ResponseEntity<CartDto> appendOneItem(@RequestParam Long itemId,
+                                                 @AuthenticationPrincipal OAuth2User oAuth2User) {
         return ResponseEntity.ok(
-                CartDto.fromEntity(cartService.appendOneItemBySize(itemId, sizeId, oAuth2User))
+                CartDto.fromEntity(cartService.appendOneItem(itemId, oAuth2User))
         );
     }
 
     @PutMapping(params = "action=removeOne")
     public ResponseEntity<CartDto> removeOneItemBySize(@RequestParam Long itemId,
-                                                       @RequestParam Long sizeId,
                                                        @AuthenticationPrincipal OAuth2User oAuth2User) {
         return ResponseEntity.ok(
-                CartDto.fromEntity(cartService.removeItemsBySize(itemId, sizeId, oAuth2User, 1))
+                CartDto.fromEntity(cartService.removeItems(itemId, oAuth2User, 1))
         );
     }
 
     @PutMapping(params = "action=removeAll")
     public ResponseEntity<CartDto> removeAllItemsBySize(@RequestParam Long itemId,
-                                                        @RequestParam Long sizeId,
                                                         @AuthenticationPrincipal OAuth2User oAuth2User) {
         return ResponseEntity.ok(
-                CartDto.fromEntity(cartService.removeItemsBySize(itemId, sizeId, oAuth2User))
+                CartDto.fromEntity(cartService.removeItems(itemId, oAuth2User))
         );
     }
 }

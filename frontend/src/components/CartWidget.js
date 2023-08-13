@@ -5,7 +5,7 @@ import {AppContext, ServerState} from "../contexts/AppContext";
 import Api from "../Api";
 import Button from "./Button";
 
-function CartWidget({item, chosenSizeId, maxQuantity=0}) {
+function CartWidget({item}) {
 
     const appContext = useContext(AppContext);
     const userContext = useContext(UpdatedUserContext);
@@ -16,10 +16,12 @@ function CartWidget({item, chosenSizeId, maxQuantity=0}) {
         EMPTY: "EMPTY"
     }
 
+    const maxQuantity = item["quantity"];
+
     const [cartEntry, setCartEntry] = useState(null);
     const [cartEntryState, setCartEntryState] = useState(CartEntryState.LOADING);
 
-    const getCartEntryByItem = useCallback((cart) => {
+    const getCartEntryFromCurrentItem = useCallback((cart) => {
 
         for (let i = 0; i < cart["entries"].length; i++) {
             if(cart["entries"][i]["itemId"] === item["id"]) {
@@ -39,64 +41,61 @@ function CartWidget({item, chosenSizeId, maxQuantity=0}) {
 
         Api.getCart(abortController.signal)
             .then(retrievedCart => {
-                setCartEntry(getCartEntryByItem(retrievedCart));
-                setCartEntryState(CartEntryState.PRESENT);
+
+                const cartEntry = getCartEntryFromCurrentItem(retrievedCart);
+
+                setCartEntry(cartEntry);
+
+                if(cartEntry) {
+                    setCartEntryState(CartEntryState.PRESENT);
+                } else {
+                    setCartEntryState(CartEntryState.EMPTY);
+                }
             });
 
         return () => abortController.abort();
-    }, [appContext, userContext, item, CartEntryState.PRESENT, CartEntryState.EMPTY, getCartEntryByItem]);
+    }, [appContext, userContext, item, CartEntryState.PRESENT, CartEntryState.EMPTY, getCartEntryFromCurrentItem]);
 
     const handleAddItemToCartClick = () => {
 
-        Api.incrementItemQuantityInCart(item["id"], chosenSizeId)
+        Api.incrementItemQuantityInCart(item["id"])
             .then(updatedCart => {
-                setCartEntry(getCartEntryByItem(updatedCart));
+                setCartEntry(getCartEntryFromCurrentItem(updatedCart));
                 setCartEntryState(CartEntryState.PRESENT);
             });
     }
 
     const handleIncrementItemQuantityInCartClick = () => {
 
-        if(getQuantityByChosenSizeId() + 1 > maxQuantity) {
+        if(cartEntry["quantity"] + 1 > maxQuantity) {
             return;
         }
 
-        Api.incrementItemQuantityInCart(item["id"], chosenSizeId)
+        Api.incrementItemQuantityInCart(item["id"])
             .then(updatedCart => {
-                setCartEntry(getCartEntryByItem(updatedCart));
+                setCartEntry(getCartEntryFromCurrentItem(updatedCart));
                 setCartEntryState(CartEntryState.PRESENT);
             });
     }
 
     const handleDecrementItemQuantityInCartClick = () => {
 
-        Api.removeOneItemFromCartBySize(item["id"], chosenSizeId)
+        Api.decrementItemQuantityInCart(item["id"])
             .then(updatedCart => {
-                setCartEntry(getCartEntryByItem(updatedCart));
-                setCartEntryState(CartEntryState.PRESENT);
+                setCartEntry(getCartEntryFromCurrentItem(updatedCart));
+
+                if(cartEntry["quantity"] === 1)
+                    setCartEntryState(CartEntryState.EMPTY);
             });
     }
 
-    const handleRemoveSizeQuantityFromCartEntryClick = () => {
+    const handleRemoveItemFromCartClick = () => {
 
-        Api.removeAllItemsFromCartBySize(item["id"], chosenSizeId)
+        Api.removeItemFromCart(item["id"])
             .then(updatedCart => {
-                setCartEntry(getCartEntryByItem(updatedCart));
+                setCartEntry(getCartEntryFromCurrentItem(updatedCart));
                 setCartEntryState(CartEntryState.PRESENT);
             });
-    }
-
-    const getQuantityByChosenSizeId = () => {
-
-        if(!cartEntry || !cartEntry["sizesQuantities"])
-            return 0;
-
-        for (let i = 0; i < cartEntry["sizesQuantities"].length; i++) {
-            if(cartEntry["sizesQuantities"][i]["size"]["id"] === chosenSizeId)
-                return cartEntry["sizesQuantities"][i]["quantity"];
-        }
-
-        return 0;
     }
 
     if(appContext.serverState === ServerState.UNDEFINED
@@ -120,7 +119,7 @@ function CartWidget({item, chosenSizeId, maxQuantity=0}) {
         return null;
     }
 
-    if(cartEntryState === CartEntryState.EMPTY || getQuantityByChosenSizeId() === 0) {
+    if(cartEntryState === CartEntryState.EMPTY) {
         return (
             <div className="CartWidget">
                 <span></span>
@@ -138,19 +137,19 @@ function CartWidget({item, chosenSizeId, maxQuantity=0}) {
                         <div className="counter-controls">
                             <span className="noselect"
                                   onClick={() => handleDecrementItemQuantityInCartClick()}>-</span>
-                            <span className="noselect disabled">{getQuantityByChosenSizeId()}</span>
-                            <span className={"noselect" + (getQuantityByChosenSizeId() === maxQuantity ? " disabled" : "")}
+                            <span className="noselect disabled">{cartEntry["quantity"]}</span>
+                            <span className={"noselect" + (item["quantity"] <= maxQuantity ? " disabled" : "")}
                                   onClick={() => handleIncrementItemQuantityInCartClick()}>
                                 +
                             </span>
                         </div>
                         <div className="total-price">
-                            {item["price"] * getQuantityByChosenSizeId()}₽
+                            {item["price"] * cartEntry["quantity"]}₽
                         </div>
                     </div>
-                    {getQuantityByChosenSizeId() === maxQuantity && <p>Больше не добавить</p>}
+                    {cartEntry["quantity"] >= maxQuantity && <p>Больше не добавить</p>}
                 </div>
-                <span className="link danger" onClick={() => handleRemoveSizeQuantityFromCartEntryClick()}>Убрать</span>
+                <span className="link danger" onClick={() => handleRemoveItemFromCartClick()}>Убрать</span>
             </div>
 
         </div>

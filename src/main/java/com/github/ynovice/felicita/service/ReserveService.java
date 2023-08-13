@@ -20,6 +20,4 @@ public interface ReserveService {
     Page<Reserve> getAll(int page);
 
     void deleteById(Long id);
-
-//    void removeItemFromReserves(Item item);
 }

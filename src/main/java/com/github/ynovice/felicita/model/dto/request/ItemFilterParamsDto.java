@@ -13,9 +13,6 @@ public class ItemFilterParamsDto {
     private Integer priceTo;
     private boolean filterByPriceTo = false;
 
-    private List<Long> sizesIds;
-    private boolean filterBySizes = false;
-
     private List<Long> materialsIds;
     private boolean filterByMaterials = false;
 
@@ -36,23 +33,18 @@ public class ItemFilterParamsDto {
         filterByPriceTo = priceTo != null;
     }
 
-    public void setSizesIds(List<Long> sizesIds) {
-        this.sizesIds = sizesIds;
-        filterBySizes = sizesIds != null && sizesIds.size() > 0;
-    }
-
     public void setMaterialsIds(List<Long> materialsIds) {
         this.materialsIds = materialsIds;
-        filterByMaterials = materialsIds != null && materialsIds.size() > 0;
+        filterByMaterials = materialsIds != null && !materialsIds.isEmpty();
     }
 
     public void setCategoriesIds(List<Long> categoriesIds) {
         this.categoriesIds = categoriesIds;
-        filterByCategories = categoriesIds != null && categoriesIds.size() > 0;
+        filterByCategories = categoriesIds != null && !categoriesIds.isEmpty();
     }
 
     public void setColorsIds(List<Long> colorsIds) {
         this.colorsIds = colorsIds;
-        filterByColors = colorsIds != null && colorsIds.size() > 0;
+        filterByColors = colorsIds != null && !colorsIds.isEmpty();
     }
 }

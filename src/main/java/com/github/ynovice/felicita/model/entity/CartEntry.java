@@ -1,10 +1,8 @@
 package com.github.ynovice.felicita.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(
@@ -29,15 +27,11 @@ public class CartEntry {
     @JoinColumn(nullable = false, referencedColumnName = "id")
     private Item item;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cartEntry", cascade = CascadeType.ALL)
-    private List<SizeQuantity> sizesQuantities;
+    @Column(nullable = false)
+    private Integer quantity;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "cart_entries_sizes_quantities_prev_states",
-            joinColumns = @JoinColumn(name = "cart_entry_id", referencedColumnName = "id")
-    )
-    private List<SizeQuantityPrevState> sizesQuantitiesPrevStates;
+    @Column(name = "prev_quantity")
+    private Integer prevQuantity;
 
     @Deprecated
     public Long getUserId() {
@@ -48,48 +42,7 @@ public class CartEntry {
         return item != null ? item.getId() : null;
     }
 
-    public void addSizeQuantityPrevState(SizeQuantityPrevState sqps) {
-
-        if(this.sizesQuantitiesPrevStates == null)
-            sizesQuantitiesPrevStates = new ArrayList<>();
-
-        sizesQuantitiesPrevStates.add(sqps);
-    }
-
-    public SizeQuantity getSizeQuantityBySize(@NonNull Size size) {
-        return sizesQuantities
-                .stream()
-                .filter(sq -> sq.getSize().equals(size))
-                .findFirst()
-                .orElseGet(() -> createAndLinkSizeQuantity(size));
-    }
-
-    private SizeQuantity createAndLinkSizeQuantity(@NonNull Size size) {
-
-        SizeQuantity sizeQuantity = new SizeQuantity();
-        sizeQuantity.setSize(size);
-        sizeQuantity.setQuantity(0);
-        sizeQuantity.setCartEntry(this);
-
-        sizesQuantities.add(sizeQuantity);
-        return sizeQuantity;
-    }
-
-    @Embeddable
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    public static class SizeQuantityPrevState {
-
-        @ManyToOne
-        @JoinColumn(referencedColumnName = "id", nullable = false)
-        private Size size;
-
-        @Column(nullable = false)
-        private Integer quantity;
-
-        public SizeQuantityPrevState(SizeQuantity source) {
-            this(source.getSize(), source.getQuantity());
-        }
+    public void updateQuantity(int difference) {
+        quantity += difference;
     }
 }

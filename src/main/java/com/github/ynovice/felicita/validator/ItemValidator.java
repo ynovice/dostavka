@@ -1,7 +1,12 @@
 package com.github.ynovice.felicita.validator;
 
-import com.github.ynovice.felicita.model.entity.*;
-import com.github.ynovice.felicita.repository.*;
+import com.github.ynovice.felicita.model.entity.Category;
+import com.github.ynovice.felicita.model.entity.Color;
+import com.github.ynovice.felicita.model.entity.Image;
+import com.github.ynovice.felicita.model.entity.Item;
+import com.github.ynovice.felicita.repository.CategoryRepository;
+import com.github.ynovice.felicita.repository.ColorRepository;
+import com.github.ynovice.felicita.repository.ImageRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,7 +24,6 @@ public class ItemValidator implements Validator {
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
     private final ColorRepository colorRepository;
-    private final SizeRepository sizeRepository;
 
     @Override
     public boolean supports(@NonNull Class<?> targetObjectClass) {
@@ -38,7 +42,7 @@ public class ItemValidator implements Validator {
         validateColors(item, errors);
         validateCreatedAt(item, errors);
         validatePrice(item, errors);
-        validateSizesQuantities(item, errors);
+        validateQuantity(item, errors);
         validateActive(item, errors);
     }
 
@@ -75,7 +79,7 @@ public class ItemValidator implements Validator {
             return;
         }
 
-        if(description.length() > 0 && description.trim().length() == 0) {
+        if(!description.isEmpty() && description.trim().isEmpty()) {
             errors.rejectValue(
                     "description",
                     "item.description.empty",
@@ -252,62 +256,32 @@ public class ItemValidator implements Validator {
         if(item.getPrice() <= 0) {
             errors.rejectValue(
                     "price",
-                    "price.notPositive",
+                    "item.price.notPositive",
                     "Цена товара должна быть больше 0"
             );
         }
     }
 
-    public void validateSizesQuantities(@NonNull Item item, @NonNull Errors errors) {
+    public void validateQuantity(@NonNull Item item, @NonNull Errors errors) {
 
-        List<SizeQuantity> sizesQuantities = item.getSizesQuantities();
-
-        if(sizesQuantities == null) {
+        if(item.getQuantity() == null) {
             errors.rejectValue(
-                    "sizesQuantities",
-                    "item.sizesQuantities.null",
-                    "Произошла ошибка при сохранении информации о" +
-                            " количестве товара, свяжитесь с разработчиком"
+                    "quantity",
+                    "item.quantity.null",
+                    "Укажите количество товара"
             );
             return;
         }
 
-        for(SizeQuantity sizeQuantity : sizesQuantities) {
-
-            if(sizeQuantity.getQuantity() == null || sizeQuantity.getQuantity() <= 0) {
-                errors.rejectValue(
-                        "sizesQuantities",
-                        "item.sizesQuantities.invalidQuantity",
-                        "Неверно указано количество товара для одного из размеров"
-                );
-                return;
-            }
-
-            if(!sizeRepository.existsById(sizeQuantity.getSizeId())) {
-                errors.rejectValue(
-                        "sizesQuantities",
-                        "item.sizesQuantities.invalidSize",
-                        "Для товара указан несуществующий размер"
-                );
-                return;
-            }
-        }
-
-        for (int i = 0; i < sizesQuantities.size() - 1; i++) {
-            for (int j = i + 1; j < sizesQuantities.size(); j++) {
-
-                if(sizesQuantities.get(i).getSizeId()
-                        .equals(sizesQuantities.get(j).getSizeId())) {
-                    errors.rejectValue(
-                            "sizesQuantities",
-                            "item.sizesQuantities.duplicated",
-                            "Один и тот же размер товара указан несколько раз"
-                    );
-                    return;
-                }
-            }
+        if(item.getQuantity() < 0) {
+            errors.rejectValue(
+                    "quantity",
+                    "item.quantity.notPositive",
+                    "Количество товара не может быть меньше 0"
+            );
         }
     }
+
 
     public void validateActive(@NonNull Item item, @NonNull Errors errors) {
 
@@ -330,11 +304,6 @@ public class ItemValidator implements Validator {
     }
 
     private boolean shouldBeActive(@NonNull Item item) {
-
-        List<SizeQuantity> sizesQuantities = item.getSizesQuantities();
-
-        return sizesQuantities
-                .stream()
-                .anyMatch(sq -> sq.getQuantity() > 0);
+        return item.getQuantity() > 0;
     }
 }

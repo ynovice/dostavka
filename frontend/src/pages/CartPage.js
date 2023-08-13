@@ -32,33 +32,25 @@ function CartPage() {
         return () => abortController.abort();
         }, [reloadCart]);
 
-    const handleDecrementItemQuantityInCartClick = (item, size) => {
-        Api.removeOneItemFromCartBySize(item["id"], size["id"])
+    const handleDecrementItemQuantityInCartClick = (item) => {
+        Api.decrementItemQuantityInCart(item["id"])
             .then(() => reloadCart(new AbortController().signal));
     }
 
-    const handleIncrementItemQuantityInCartClick = (item, sizeQuantity) => {
+    const handleIncrementItemQuantityInCartClick = (item, cartEntry) => {
 
-        if(item["quantity"] < sizeQuantity["quantity"] + 1) {
+        if(item["quantity"] < cartEntry["quantity"] + 1) {
             return;
         }
 
-        Api.incrementItemQuantityInCart(item["id"], sizeQuantity["size"]["id"])
+        Api.incrementItemQuantityInCart(item["id"])
             .then(() => reloadCart(new AbortController().signal));
     }
 
-    const handleRemoveSizeQuantityFromCartEntryClick = (item, size) => {
-        Api.removeAllItemsFromCartBySize(item["id"], size["id"])
+    const handleRemoveItemFromCartClick = (item) => {
+        Api.removeItemFromCart(item["id"])
             .then(() => reloadCart(new AbortController().signal));
     }
-
-    const getItemQuantityBySize = (item, size) => {
-
-        for (let i = 0; i < item["sizesQuantities"].length; i++) {
-            if(item["sizesQuantities"][i]["size"]["id"] === size["id"]) return item["sizesQuantities"][i]["quantity"];
-        }
-    }
-
     const [similarItemsPage, setSimilarItemsPage] = useState(null);
     const [cachedSimilarItemsPage, setCachedSimilarItemsPage] = useState(null);
 
@@ -129,55 +121,47 @@ function CartPage() {
                                 Api.getImageUrlByImageId(item["images"][0]["id"]) :
                                 "/ui/item-placeholder.png";
 
-                            return cartEntry["sizesQuantities"].map(sq => {
+                            const noMoreToAdd = item["quantity"] <= cartEntry["quantity"];
 
-                                const noMoreToAdd = getItemQuantityBySize(item, sq["size"]) === sq["quantity"];
+                            return (
+                                <div key={"cart-entry-" + cartEntry["id"]} className="cart-item">
 
-                                return (
-                                    <div key={"cart-sq-" + sq["size"]["id"] + "-" + item["id"]} className="cart-item">
+                                    <div className="image-container">
+                                        <img src={imageUrl} alt={item["name"]}/>
+                                    </div>
 
-                                        <div className="image-container">
-                                            <img src={imageUrl} alt={item["name"]}/>
+                                    <div className="cart-item-info">
+
+                                        <div className="cart-item-name">{item["name"]}</div>
+                                        <div className="cart-item-total-price">
+                                            {item["price"] * cartEntry["quantity"]}₽
                                         </div>
 
-                                        <div className="cart-item-info">
-
-                                            <div className="cart-item-name">{item["name"]}</div>
-                                            <div className="cart-item-size">{sq["size"]["name"]}</div>
-                                            <div className="cart-item-total-price">
-                                                {item["price"] * sq["quantity"]}₽
+                                        <div className="cart-item-controls">
+                                            <div className="left">
+                                                <span className="link danger"
+                                                      onClick={() => handleRemoveItemFromCartClick(item)}>
+                                                    Убрать
+                                                </span>
                                             </div>
+                                            <div className="right">
 
-                                            <div className="cart-item-controls">
+                                                {noMoreToAdd && <p>Больше не добавить</p>}
 
-                                                <div className="left">
-                                                    <span className="link danger"
-                                                          onClick={() => handleRemoveSizeQuantityFromCartEntryClick(item, sq["size"])}>
-                                                        Убрать
-                                                    </span>
-                                                </div>
-                                                <div className="right">
-
-                                                    {noMoreToAdd && <p>Больше не добавить</p>}
-
-                                                    <div className="counter-controls">
+                                                <div className="counter-controls">
                                                         <span className="noselect"
-                                                              onClick={() => handleDecrementItemQuantityInCartClick(item, sq["size"])}>-</span>
-                                                        <span className="noselect disabled">{sq["quantity"]}</span>
-                                                        <span className={"noselect" + (noMoreToAdd ? " disabled" : "")}
-                                                              onClick={() => handleIncrementItemQuantityInCartClick(item, sq)}>
+                                                              onClick={() => handleDecrementItemQuantityInCartClick(item)}>-</span>
+                                                    <span className="noselect disabled">{cartEntry["quantity"]}</span>
+                                                    <span className={"noselect" + (noMoreToAdd ? " disabled" : "")}
+                                                          onClick={() => handleIncrementItemQuantityInCartClick(item)}>
                                                             +
                                                         </span>
-                                                    </div>
-
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            });
-
+                                </div>
+                            );
                         })}
 
                     </div>

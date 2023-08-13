@@ -6,7 +6,6 @@ import Api from "../Api";
 import InvalidEntityException from "../exception/InvalidEntityException";
 import adminAccessOnly from "../hoc/adminAccessOnly";
 import ItemPropertySelector from "../components/ItemPropertySelector";
-import SizesQuantitiesSelector from "../components/SizesQuantitiesSelector";
 import ItemCategoriesSelector from "../components/ItemCategoriesSelector";
 import {useSearchParams} from "react-router-dom";
 import {ApiContext} from "../contexts/ApiContext";
@@ -36,15 +35,6 @@ function SaveItemPage() {
         Api.getAllColors()
             .then(retrievedColors => setColors(retrievedColors))
             .catch(() => alert("Ошибка при получении списка цветов, свяжитесь с разработчиком"));
-    }, []);
-
-
-    const [sizes, setSizes] = useState([]);
-    const [sizesQuantities, setSizesQuantities] = useState([]);
-    useEffect(() => {
-        Api.getAllSizes()
-            .then(retrievedSizes => setSizes(retrievedSizes))
-            .catch(() => alert("Ошибка при получении списка существующих размеров, свяжитесь с разработчиком"));
     }, []);
 
 
@@ -113,6 +103,7 @@ function SaveItemPage() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
+    const [quantity, setQuantity] = useState("");
 
 
     const [fieldErrors, setFieldErrors] = useState([]);
@@ -127,18 +118,9 @@ function SaveItemPage() {
         for (let i = 0; i < selectedCategoriesSequences.length; i++)
             categoriesIds.push(...selectedCategoriesSequences[i]);
 
-        const sizesQuantitiesDtos = [];
-        for (let i = 0; i < sizesQuantities.length; i++)
-            sizesQuantitiesDtos.push({
-                sizeId: sizesQuantities[i]["size"]["id"],
-                quantity: Number(sizesQuantities[i]["quantity"])
-            });
-
-
         const modifyItemRequestDto = {
-            name, description, price, imagesIds, categoriesIds,
-            colorsIds: selectedColorsIds,
-            sizesQuantities: sizesQuantitiesDtos
+            name, description, price, quantity, imagesIds, categoriesIds,
+            colorsIds: selectedColorsIds
         };
 
         const itemId = Number(searchParams.get("id"));
@@ -187,12 +169,9 @@ function SaveItemPage() {
                 setName(retrievedItem["name"]);
                 setDescription(retrievedItem["description"]);
                 setPrice(retrievedItem["price"]);
+                setQuantity(retrievedItem["quantity"])
 
                 setSelectedColorsIds(retrievedItem["colors"].map(color => color["id"]));
-
-                setSizesQuantities(retrievedItem["sizesQuantities"].map(sq => {
-                    return {size: sq["size"], quantity: sq["quantity"]};
-                }));
 
                 setImagesData(retrievedItem["images"].map(image => {
                     return {uploadedImage: image, name: `id ${image["id"]} image`}
@@ -260,7 +239,7 @@ function SaveItemPage() {
                        id="description"
                        placeholder="Описание товара"/>
             </div>
-            <div className="section form-row">
+            <div className="section form-row no-margin">
                 <label htmlFor="price">Цена (₽)</label>
                 <input className="flct-input"
                        value={price}
@@ -268,6 +247,16 @@ function SaveItemPage() {
                        type="number"
                        id="price"
                        placeholder="Цена товара"/>
+            </div>
+
+            <div className="section form-row">
+                <label htmlFor="price">Количество</label>
+                <input className="flct-input"
+                       value={quantity}
+                       onChange={(e) => setQuantity(e.target.value)}
+                       type="number"
+                       id="price"
+                       placeholder="Количество товара"/>
             </div>
 
             <div className="section block-title">Фотографии</div>
@@ -317,13 +306,7 @@ function SaveItemPage() {
                                   selectedIds={selectedColorsIds}
                                   setSelectedIds={setSelectedColorsIds}
                                   propertySource={colors}/>
-
-            <div className="section block-title">Размеры и наличие товара</div>
-            <SizesQuantitiesSelector emptyListMessage="Ничего не указано"
-                                     selectedSizesQuantities={sizesQuantities}
-                                     setSelectedSizesQuantities={setSizesQuantities}
-                                     existingSizes={sizes}/>
-
+            
             <div className="section">
                 <input type="button"
                        className="button"

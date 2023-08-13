@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -57,8 +56,7 @@ public class Cart {
         CartEntry cartEntry = new CartEntry();
         cartEntry.setCart(this);
         cartEntry.setItem(item);
-        cartEntry.setSizesQuantities(new ArrayList<>());
-        cartEntry.setSizesQuantitiesPrevStates(new ArrayList<>());
+        cartEntry.setQuantity(0);
 
         entries.add(cartEntry);
         return cartEntry;

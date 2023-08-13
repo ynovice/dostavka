@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import "../css/ItemsFilter.css";
 import ItemCategoryFilter from "./ItemCategoryFilter";
 import ItemCheckboxFilter from "./ItemCheckboxFilter";
-import ItemRadioFilter from "./ItemRadioFilter";
 
 function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState, onSuccessCatalogState}) {
 
@@ -40,12 +39,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
             .then(retrievedCategoriesTrees => setExistingCategoriesTrees(retrievedCategoriesTrees));
         }, []);
 
-    const [existingSizes, setExistingSizes] = useState([]);
-    const [chosenSizesIds, setChosenSizesIds] = useState([]);
-    useEffect(() => {
-        Api.getAllSizes().then(retrievedSizes => setExistingSizes(retrievedSizes));
-        }, []);
-
 
     const [existingColors, setExistingColors] = useState([]);
     const [chosenColorsIds, setChosenColorsIds] = useState([]);
@@ -73,7 +66,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
         if(priceTo !== "") searchParamsDto.priceTo = priceTo;
 
         if(chosenCategoriesIds.length > 0) searchParamsDto.categoriesIds = chosenCategoriesIds;
-        if(chosenSizesIds.length > 0) searchParamsDto.sizesIds = arrToStr(chosenSizesIds);
         if(chosenColorsIds.length > 0) searchParamsDto.colorsIds = arrToStr(chosenColorsIds);
 
         return searchParamsDto;
@@ -128,11 +120,6 @@ function ItemFiltersContainer({opened, setOpened, setItemsPage, setCatalogState,
                                     categoriesTrees={existingCategoriesTrees}
                                     chosenIds={chosenCategoriesIds}
                                     setChosenIds={setChosenCategoriesIds}/>
-
-                <ItemCheckboxFilter getParamName={"sizesIds"}
-                                    title={"Размер"}
-                                    options={existingSizes}
-                                    setIds={setChosenSizesIds}/>
 
                 <ItemCheckboxFilter getParamName={"colorsIds"}
                                     title={"Цвет"}

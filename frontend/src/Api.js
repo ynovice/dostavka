@@ -94,20 +94,6 @@ const Api = (function () {
             await throwCorrespondingException(response);
         },
 
-        getAllMaterials: async function (abortSignal) {
-
-            const response = await fetch(API_BASE_URL + "/material", {
-                signal: abortSignal,
-                credentials: "include"
-            }).catch(() => null);
-
-            if(response && response.ok) {
-                return await response.json();
-            }
-
-            await throwCorrespondingException(response);
-        },
-
         getAllColors: async function (abortSignal) {
 
             const response = await fetch(API_BASE_URL + "/color", {
@@ -116,20 +102,6 @@ const Api = (function () {
             }).catch(() => {
                 return null;
             });
-
-            if(response && response.ok) {
-                return await response.json();
-            }
-
-            await throwCorrespondingException(response);
-        },
-
-        getAllSizes: async function (abortSignal) {
-
-            const response = await fetch(API_BASE_URL + "/size", {
-                signal: abortSignal,
-                credentials: "include"
-            }).catch(() => null);
 
             if(response && response.ok) {
                 return await response.json();
@@ -174,10 +146,10 @@ const Api = (function () {
             await throwCorrespondingException(response);
         },
 
-        incrementItemQuantityInCart: async function (itemId, sizeId) {
+        incrementItemQuantityInCart: async function (itemId) {
 
             const urlSearchParams = new URLSearchParams({
-                itemId, sizeId,
+                itemId,
                 action: "append"
             });
 
@@ -196,10 +168,10 @@ const Api = (function () {
             await throwCorrespondingException(response);
         },
 
-        removeOneItemFromCartBySize: async function (itemId, sizeId) {
+        decrementItemQuantityInCart: async function (itemId) {
 
             const urlSearchParams = new URLSearchParams({
-                itemId, sizeId,
+                itemId,
                 action: "removeOne"
             });
 
@@ -218,10 +190,10 @@ const Api = (function () {
             await throwCorrespondingException(response);
         },
 
-        removeAllItemsFromCartBySize: async function (itemId, sizeId) {
+        removeItemFromCart: async function (itemId) {
 
             const urlSearchParams = new URLSearchParams({
-                itemId, sizeId,
+                itemId,
                 action: "removeAll"
             });
 
@@ -337,20 +309,6 @@ const Api = (function () {
             await throwCorrespondingException(response);
         },
 
-        getReservesForCurrentUser: async function (abortSignal) {
-
-            const response = await fetch(API_BASE_URL + "/reserve", {
-                signal: abortSignal,
-                credentials: "include"
-            }).catch(() => null)
-
-            if(response && response.ok) {
-                return await response.json();
-            }
-
-            await throwCorrespondingException(response);
-        },
-
         getAllArticles: async function (abortSignal) {
 
             const response = await fetch(API_BASE_URL + "/article", {
@@ -384,9 +342,6 @@ const Api = (function () {
             return API_BASE_URL + "/image/" + id;
         },
 
-        getBaseApiUrl: function () {
-            return API_BASE_URL;
-        },
         getServerDomain: function () {
             return SERVER_DOMAIN;
         },

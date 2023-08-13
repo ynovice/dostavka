@@ -1,8 +1,13 @@
 package com.github.ynovice.felicita.service.impl;
 
 import com.github.ynovice.felicita.exception.BadRequestException;
-import com.github.ynovice.felicita.model.entity.*;
-import com.github.ynovice.felicita.repository.*;
+import com.github.ynovice.felicita.model.entity.Cart;
+import com.github.ynovice.felicita.model.entity.CartEntry;
+import com.github.ynovice.felicita.model.entity.Item;
+import com.github.ynovice.felicita.model.entity.User;
+import com.github.ynovice.felicita.repository.CartEntryRepository;
+import com.github.ynovice.felicita.repository.CartRepository;
+import com.github.ynovice.felicita.repository.ItemRepository;
 import com.github.ynovice.felicita.service.CartService;
 import com.github.ynovice.felicita.service.UserService;
 import lombok.NonNull;
@@ -22,9 +27,7 @@ public class CartServiceImpl implements CartService {
     private final UserService userService;
 
     private final ItemRepository itemRepository;
-    private final SizeRepository sizeRepository;
     private final CartEntryRepository cartEntryRepository;
-    private final SizeQuantityRepository sizeQuantityRepository;
 
     @Override
     public Cart getByPrincipal(@NonNull OAuth2User principal) {
@@ -42,26 +45,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart appendOneItemBySize(Long itemId, Long sizeId, @NonNull OAuth2User oAuth2User) {
+    public Cart appendOneItem(Long itemId, @NonNull OAuth2User oAuth2User) {
 
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new BadRequestException("Выбранный товар не существует"));
 
-        Size size = sizeRepository.findById(sizeId)
-                .orElseThrow(() -> new BadRequestException("Выбранный размер не существует"));
-
         Cart cart = getByPrincipal(oAuth2User);
         CartEntry cartEntry = cart.getCartEntryByItem(item);
-        SizeQuantity cartEntrySQ = cartEntry.getSizeQuantityBySize(size);
 
-        SizeQuantity itemSQ = item.getSizeQuantityBySize(size)
-                .orElseThrow(() -> new BadRequestException("На складе нет выбранного вами товара"));
-
-        if(cartEntrySQ.getQuantity() + 1 > itemSQ.getQuantity()) {
-            throw new BadRequestException("На складе есть только " + itemSQ.getQuantity() + " единиц товара");
+        if(cartEntry.getQuantity() + 1 > item.getQuantity()) {
+            throw new BadRequestException("На складе есть только " + item.getQuantity() + " единиц товара");
         }
 
-        cartEntrySQ.updateQuantity(1);
+        cartEntry.updateQuantity(1);
         cart.updateTotalItems(1);
         cart.updateTotalPrice(item.getPrice());
 
@@ -70,40 +66,31 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart removeItemsBySize(Long itemId, Long sizeId, @NonNull OAuth2User oAuth2User) {
-        return removeItemsBySize(itemId, sizeId, oAuth2User, null);
+    public Cart removeItems(Long itemId, @NonNull OAuth2User oAuth2User) {
+        return removeItems(itemId, oAuth2User, null);
     }
 
     @Override
-    public Cart removeItemsBySize(Long itemId, Long sizeId, @NonNull OAuth2User oAuth2User, Integer amount) {
+    public Cart removeItems(Long itemId, @NonNull OAuth2User oAuth2User, Integer amount) {
 
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new BadRequestException("Выбранный товар не существует"));
 
-        Size size = sizeRepository.findById(sizeId)
-                .orElseThrow(() -> new BadRequestException("Выбранный размер не существует"));
-
         Cart cart = getByPrincipal(oAuth2User);
         CartEntry cartEntry = cart.getCartEntryByItem(item);
-        SizeQuantity cartEntrySQ = cartEntry.getSizeQuantityBySize(size);
 
         if(amount == null)
-            amount = cartEntrySQ.getQuantity();
+            amount = cartEntry.getQuantity();
 
         if(amount <= 0)
             throw new BadRequestException("Количество удаляемых товаров должно быть больше 0");
 
-        if(cartEntrySQ.getQuantity() < amount)
+        if(cartEntry.getQuantity() < amount)
             throw new BadRequestException("У вас в корзине нет " + amount + " единиц такого товара");
 
-        cartEntrySQ.updateQuantity(-amount);
+        cartEntry.updateQuantity(-amount);
 
-        if(cartEntrySQ.getQuantity() == 0) {
-            cartEntry.getSizesQuantities().remove(cartEntrySQ);
-            sizeQuantityRepository.delete(cartEntrySQ);
-        }
-
-        if(cartEntry.getSizesQuantities().size() == 0) {
+        if(cartEntry.getQuantity() == 0) {
             cart.getEntries().remove(cartEntry);
             cartEntryRepository.delete(cartEntry);
         }
@@ -123,34 +110,15 @@ public class CartServiceImpl implements CartService {
         for(CartEntry cartEntry : cart.getEntries()) {
 
             Item item = cartEntry.getItem();
-            List<SizeQuantity> cartEntrySizesQuantitiesToDelete = new ArrayList<>();
-
-            for(SizeQuantity cartEntrySQ : cartEntry.getSizesQuantities()) {
-
-                Size size = cartEntrySQ.getSize();
-
-                int amountOfItemsGone = cartEntrySQ.getQuantity() - item.getQuantityBySize(size);
-
-                if(amountOfItemsGone > 0) {
-
-                    CartEntry.SizeQuantityPrevState sqps = new CartEntry.SizeQuantityPrevState(cartEntrySQ);
-                    cartEntry.addSizeQuantityPrevState(sqps);
-
-                    cartEntrySQ.updateQuantity(-amountOfItemsGone);
-
-                    if(cartEntrySQ.getQuantity() <= 0)
-                        cartEntrySizesQuantitiesToDelete.add(cartEntrySQ);
-                }
+            
+            int amountOfItemsGone = cartEntry.getQuantity() - item.getQuantity();
+            
+            if(amountOfItemsGone > 0) {
+                cartEntry.setPrevQuantity(cartEntry.getQuantity());
+                cartEntry.updateQuantity(-amountOfItemsGone);
             }
 
-            for(SizeQuantity cartEntrySQ : cartEntrySizesQuantitiesToDelete) {
-                cartEntry.getSizesQuantities().remove(cartEntrySQ);
-                try {
-                    sizeQuantityRepository.deleteById(cartEntrySQ.getId());
-                } catch (RuntimeException ignored) {}
-            }
-
-            if(cartEntry.getSizesQuantities().size() == 0)
+            if(cartEntry.getQuantity() == 0)
                 cartEntriesToDelete.add(cartEntry);
         }
 
@@ -164,11 +132,8 @@ public class CartServiceImpl implements CartService {
 
         for(CartEntry cartEntry : cart.getEntries()) {
 
-            cartEntry.getSizesQuantities()
-                    .forEach(sq -> {
-                        cart.updateTotalItems(sq.getQuantity());
-                        cart.updateTotalPrice(sq.getQuantity() * cartEntry.getItem().getPrice());
-                    });
+            cart.updateTotalItems(cartEntry.getQuantity());
+            cart.updateTotalPrice(cartEntry.getQuantity() * cartEntry.getItem().getPrice());
         }
     }
 

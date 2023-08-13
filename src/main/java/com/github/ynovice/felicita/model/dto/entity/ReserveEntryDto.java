@@ -4,8 +4,6 @@ import com.github.ynovice.felicita.model.entity.ReserveEntry;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 public class ReserveEntryDto {
@@ -13,7 +11,7 @@ public class ReserveEntryDto {
     private Long id;
     private ItemDto item;
     private Integer pricePerItem;
-    private List<SizeQuantityDto> sizesQuantities;
+    private Integer quantity;
 
     public static ReserveEntryDto fromEntity(ReserveEntry reserveEntry) {
 
@@ -21,13 +19,7 @@ public class ReserveEntryDto {
         dto.setId(reserveEntry.getId());
         dto.setItem(ItemDto.fromEntity(reserveEntry.getItem()));
         dto.setPricePerItem(reserveEntry.getPricePerItem());
-
-        dto.setSizesQuantities(
-                reserveEntry.getSizesQuantities()
-                        .stream()
-                        .map(SizeQuantityDto::fromEntity)
-                        .toList()
-        );
+        dto.setQuantity(reserveEntry.getQuantity());
 
         return dto;
     }

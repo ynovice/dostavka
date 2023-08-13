@@ -87,34 +87,29 @@ function ReservePage() {
                             Api.getImageUrlByImageId(item["images"][0]["id"]) :
                             "/ui/item-placeholder.png";
 
-                        return reserveEntry["sizesQuantities"].map(sq => {
+                        return (
+                            <div key={"reserve-entry-" + reserveEntry["id"]} className="cart-item">
 
-                            return (
-                                <div key={"cart-sq-" + sq["size"]["id"] + "-" + item["id"]} className="cart-item">
-                                    <div className="image-container">
-                                        <img src={imageUrl} alt={item["name"]}/>
+                                <div className="image-container">
+                                    <img src={imageUrl} alt={item["name"]}/>
+                                </div>
+
+                                <div className="cart-item-info">
+                                    <div className="cart-item-name">{item["name"]}</div>
+                                    <div className="cart-item-total-price">
+                                        {reserveEntry["pricePerItem"] * reserveEntry["quantity"]}₽
                                     </div>
-
-                                    <div className="cart-item-info">
-                                        <div className="cart-item-name">{item["name"]}</div>
-                                        <div className="cart-item-size">{sq["size"]["name"]}</div>
-                                        <div className="cart-item-total-price">
-                                            {reserveEntry["pricePerItem"] * sq["quantity"]}₽
-                                        </div>
-
-                                        <div className="cart-item-controls noselect disabled">
-                                            <div className="left"></div>
-                                            <div className="right">
-                                                <div className="counter-controls">
-                                                    <span className="noselect disabled">{sq["quantity"]}</span>
-                                                </div>
+                                    <div className="cart-item-controls noselect disabled">
+                                        <div className="left"></div>
+                                        <div className="right">
+                                            <div className="counter-controls">
+                                                <span className="noselect disabled">{reserveEntry["quantity"]}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            );
-
-                        });
+                            </div>
+                        );
                     })}
                 </div>
 

@@ -2,13 +2,11 @@ package com.github.ynovice.felicita.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -60,8 +58,8 @@ public class Item {
 
     private Boolean active;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL)
-    private List<SizeQuantity> sizesQuantities;
+    @Column(nullable = false)
+    private Integer quantity;
 
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CartEntry> cartEntries;
@@ -69,28 +67,11 @@ public class Item {
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ReserveEntry> reserveEntries;
 
-    public Integer getQuantityBySize(Size size) {
-        return getSizeQuantityBySize(size)
-                .map(SizeQuantity::getQuantity)
-                .orElse(0);
-    }
+    public void updateQuantity(int difference) {
 
-    public Optional<SizeQuantity> getSizeQuantityBySize(Size size) {
-        return sizesQuantities
-                .stream()
-                .filter(sq -> sq.getSize().equals(size))
-                .findFirst();
-    }
+        quantity += difference;
 
-    public SizeQuantity createAndLinkSizeQuantity(@NonNull Size size) {
-
-        SizeQuantity sizeQuantity = new SizeQuantity();
-        sizeQuantity.setSize(size);
-        sizeQuantity.setQuantity(0);
-        sizeQuantity.setItem(this);
-
-        sizesQuantities.add(sizeQuantity);
-        return sizeQuantity;
+        active = quantity > 0;
     }
 
     @Override

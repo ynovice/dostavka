@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Table(name = "reserve_entries")
 @Getter
@@ -23,8 +21,8 @@ public class ReserveEntry {
     @Column(nullable = false)
     private Integer pricePerItem;
 
-    @OneToMany(mappedBy = "reserveEntry", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<SizeQuantity> sizesQuantities;
+    @Column(nullable = false)
+    private Integer quantity;
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", nullable = false)
