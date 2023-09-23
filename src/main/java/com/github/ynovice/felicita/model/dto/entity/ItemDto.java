@@ -19,7 +19,6 @@ public class ItemDto {
 
     private List<ImageDto> images;
     private Set<CategoryDto> categories;
-    private Set<ColorDto> colors;
 
     private ZonedDateTime createdAt;
     private Integer price;
@@ -47,13 +46,6 @@ public class ItemDto {
                 item.getCategories()
                         .stream()
                         .map(CategoryDto::fromEntity)
-                        .collect(Collectors.toSet())
-        );
-
-        dto.setColors(
-                item.getColors()
-                        .stream()
-                        .map(ColorDto::fromEntity)
                         .collect(Collectors.toSet())
         );
 

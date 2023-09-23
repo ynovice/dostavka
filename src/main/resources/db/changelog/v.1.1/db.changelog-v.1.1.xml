@@ -37,4 +37,15 @@
                      path="20-add-sizes.sql"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="remove-colors" author="ynovice">
+        <sqlFile dbms="postgresql"
+                 relativeToChangelogFile="true"
+                 path="30-remove-colors.sql"/>
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     relativeToChangelogFile="true"
+                     path="30-add-colors.sql"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

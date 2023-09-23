@@ -15,8 +15,6 @@ public class ModifyItemRequestDto {
     private List<Long> imagesIds;
     private List<Long> categoriesIds;
 
-    private List<Long> colorsIds;
-
     private Integer price;
     private Integer quantity;
 }

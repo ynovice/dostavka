@@ -39,17 +39,6 @@ public class Item {
     )
     private List<Category> categories;
 
-    @ManyToMany(
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}
-    )
-    @JoinTable(
-            name = "items_colors",
-            joinColumns = {@JoinColumn(name = "item_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "color_id", referencedColumnName = "id")}
-    )
-    private List<Color> colors;
-
     @Column(nullable = false)
     private ZonedDateTime createdAt;
 

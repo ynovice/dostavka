@@ -1,11 +1,9 @@
 package com.github.ynovice.felicita.validator;
 
 import com.github.ynovice.felicita.model.entity.Category;
-import com.github.ynovice.felicita.model.entity.Color;
 import com.github.ynovice.felicita.model.entity.Image;
 import com.github.ynovice.felicita.model.entity.Item;
 import com.github.ynovice.felicita.repository.CategoryRepository;
-import com.github.ynovice.felicita.repository.ColorRepository;
 import com.github.ynovice.felicita.repository.ImageRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,6 @@ public class ItemValidator implements Validator {
 
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
-    private final ColorRepository colorRepository;
 
     @Override
     public boolean supports(@NonNull Class<?> targetObjectClass) {
@@ -39,7 +36,6 @@ public class ItemValidator implements Validator {
         validateDescription(item, errors);
         validateImages(item, errors);
         validateCategories(item, errors);
-        validateColors(item, errors);
         validateCreatedAt(item, errors);
         validatePrice(item, errors);
         validateQuantity(item, errors);
@@ -191,43 +187,6 @@ public class ItemValidator implements Validator {
                 }
 
                 parentId = categoryRepository.findParentIdById(parentId.get());
-            }
-        }
-    }
-
-    public void validateColors(@NonNull Item item, @NonNull Errors errors) {
-
-        List<Color> colors = item.getColors();
-
-        if(colors == null) {
-            errors.rejectValue(
-                    "colors",
-                    "item.colors.null",
-                    "Список цветов товара имеет недопустимое значение, свяжитесь с разработчиком"
-            );
-            return;
-        }
-
-        colors
-                .stream()
-                .filter(color -> !colorRepository.existsById(color.getId()))
-                .findAny()
-                .ifPresent(value -> errors.rejectValue(
-                        "colors",
-                        "item.colors.dontExist",
-                        "Среди выбранных цветов есть несуществующие цвета"
-                ));
-
-        for (int i = 0; i < colors.size() - 1; i++) {
-            for (int j = i + 1; j < colors.size(); j++) {
-                if (colors.get(i).getId().equals(colors.get(j).getId())) {
-                    errors.rejectValue(
-                            "colors",
-                            "item.colors.duplicated",
-                            "Один и тот же цвет указан несколько раз"
-                    );
-                    return;
-                }
             }
         }
     }

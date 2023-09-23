@@ -52,7 +52,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/api/material/**",
                                 "/api/category/**",
-                                "/api/color/**",
                                 "/api/image/**",
                                 "/api/size/**",
                                 "/api/item/**",

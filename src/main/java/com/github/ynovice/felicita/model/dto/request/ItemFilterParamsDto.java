@@ -19,9 +19,6 @@ public class ItemFilterParamsDto {
     private List<Long> categoriesIds;
     private boolean filterByCategories = false;
 
-    private List<Long> colorsIds;
-    private boolean filterByColors = false;
-
 
     public void setPriceFrom(Integer priceFrom) {
         this.priceFrom = priceFrom;
@@ -41,10 +38,5 @@ public class ItemFilterParamsDto {
     public void setCategoriesIds(List<Long> categoriesIds) {
         this.categoriesIds = categoriesIds;
         filterByCategories = categoriesIds != null && !categoriesIds.isEmpty();
-    }
-
-    public void setColorsIds(List<Long> colorsIds) {
-        this.colorsIds = colorsIds;
-        filterByColors = colorsIds != null && !colorsIds.isEmpty();
     }
 }

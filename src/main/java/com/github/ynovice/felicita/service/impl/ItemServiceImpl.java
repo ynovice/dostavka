@@ -39,7 +39,6 @@ public class ItemServiceImpl implements ItemService {
 
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
-    private final ColorRepository colorRepository;
     private final ReserveRepository reserveRepository;
     private final ReserveEntryRepository reserveEntryRepository;
 
@@ -204,6 +203,5 @@ public class ItemServiceImpl implements ItemService {
         bidirectionalAttachImagesToItem(dto.getImagesIds(), item);
 
         item.setCategories(getEntitiesReferences(dto.getCategoriesIds(), categoryRepository));
-        item.setColors(getEntitiesReferences(dto.getColorsIds(), colorRepository));
     }
 }
