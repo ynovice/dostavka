@@ -48,4 +48,15 @@
                      path="30-add-colors.sql"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="create-addresses-table" author="ynovice">
+        <sqlFile dbms="postgresql"
+                 relativeToChangelogFile="true"
+                 path="40-create-addresses-table.sql"/>
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     relativeToChangelogFile="true"
+                     path="40-drop-addresses-table.sql"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

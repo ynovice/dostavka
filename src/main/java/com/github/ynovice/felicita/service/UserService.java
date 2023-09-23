@@ -8,4 +8,6 @@ public interface UserService {
     User registerIfNotRegistered(OAuth2User oAuth2User);
 
     User getUser(OAuth2User oAuth2User);
+
+    void save(User user);
 }

@@ -66,6 +66,11 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
     private AuthServer defineAuthServer(@NonNull OAuth2User oAuth2User) {
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
