@@ -54,7 +54,7 @@ public class Item {
     private Set<CartEntry> cartEntries;
 
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ReserveEntry> reserveEntries;
+    private List<OrderEntry> orderEntries;
 
     public void updateQuantity(int difference) {
 

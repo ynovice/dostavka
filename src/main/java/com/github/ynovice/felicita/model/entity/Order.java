@@ -8,17 +8,17 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "reserves")
+@Table(name = "orders")
 @Getter
 @Setter
-public class Reserve {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "reserve", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<ReserveEntry> entries;
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<OrderEntry> entries;
 
     @Column(nullable = false)
     private Integer totalPrice;

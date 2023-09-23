@@ -19,7 +19,7 @@
 ## Project description
 
 Felicita is an online clothing store with a user-friendly adaptive interface.
-Explore diverse range of products, add them to cart, and easily reserve items for future 
+Explore diverse range of products, add them to cart, and easily order items for future 
 purchase. You can conveniently filter products based on various parameters to find exactly 
 what you're looking for.
 

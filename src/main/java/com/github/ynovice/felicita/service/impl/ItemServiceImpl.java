@@ -6,8 +6,8 @@ import com.github.ynovice.felicita.model.dto.request.ItemFilterParamsDto;
 import com.github.ynovice.felicita.model.dto.request.ModifyItemRequestDto;
 import com.github.ynovice.felicita.model.entity.Image;
 import com.github.ynovice.felicita.model.entity.Item;
-import com.github.ynovice.felicita.model.entity.Reserve;
-import com.github.ynovice.felicita.model.entity.ReserveEntry;
+import com.github.ynovice.felicita.model.entity.Order;
+import com.github.ynovice.felicita.model.entity.OrderEntry;
 import com.github.ynovice.felicita.repository.*;
 import com.github.ynovice.felicita.service.ImageService;
 import com.github.ynovice.felicita.service.ItemService;
@@ -39,8 +39,8 @@ public class ItemServiceImpl implements ItemService {
 
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
-    private final ReserveRepository reserveRepository;
-    private final ReserveEntryRepository reserveEntryRepository;
+    private final OrderRepository orderRepository;
+    private final OrderEntryRepository orderEntryRepository;
 
     @Override
     public Item createItem(@NonNull ModifyItemRequestDto requestDto) {
@@ -94,13 +94,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void updateItemQuantitiesAfterReserve(@NonNull Reserve reserve) {
+    public void updateItemQuantitiesAfterOrder(@NonNull Order order) {
 
-        for(ReserveEntry reserveEntry : reserve.getEntries()) {
+        for(OrderEntry orderEntry : order.getEntries()) {
 
-            Item item = reserveEntry.getItem();
+            Item item = orderEntry.getItem();
 
-            item.updateQuantity(-reserveEntry.getQuantity());
+            item.updateQuantity(-orderEntry.getQuantity());
 
             item.setActive(shouldBeActive(item));
             itemRepository.save(item);
@@ -125,20 +125,20 @@ public class ItemServiceImpl implements ItemService {
 
         Item item = itemRepository.findById(id).orElseThrow(NotFoundException::new);
 
-        List<ReserveEntry> reserveEntriesCopy = new ArrayList<>(item.getReserveEntries());
+        List<OrderEntry> orderEntriesCopy = new ArrayList<>(item.getOrderEntries());
 
-        item.getReserveEntries().clear();
+        item.getOrderEntries().clear();
 
-        for(ReserveEntry reserveEntry : reserveEntriesCopy) {
+        for(OrderEntry orderEntry : orderEntriesCopy) {
 
-            Reserve reserve = reserveEntry.getReserve();
+            Order order = orderEntry.getOrder();
 
-            reserve.getEntries().remove(reserveEntry);
+            order.getEntries().remove(orderEntry);
 
-            reserveEntryRepository.delete(reserveEntry);
+            orderEntryRepository.delete(orderEntry);
 
-            if(reserve.getEntries().isEmpty())
-                reserveRepository.delete(reserve);
+            if(order.getEntries().isEmpty())
+                orderRepository.delete(order);
         }
 
         itemRepository.delete(item);

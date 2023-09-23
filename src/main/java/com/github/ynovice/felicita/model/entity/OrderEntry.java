@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "reserve_entries")
+@Table(name = "order_entries")
 @Getter
 @Setter
-public class ReserveEntry {
+public class OrderEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +26,5 @@ public class ReserveEntry {
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", nullable = false)
-    private Reserve reserve;
+    private Order order;
 }
