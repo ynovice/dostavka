@@ -31,4 +31,7 @@ public class Address {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(referencedColumnName = "id")
     private User user;
+
+    @OneToOne(mappedBy = "address")
+    private Order order;
 }

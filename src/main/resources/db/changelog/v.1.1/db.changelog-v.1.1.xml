@@ -81,4 +81,15 @@
                      path="60-rollback.sql"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="add-address-to-order" author="ynovice">
+        <sqlFile dbms="postgresql"
+                 relativeToChangelogFile="true"
+                 path="70-add-address-to-order.sql"/>
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     relativeToChangelogFile="true"
+                     path="70-rollback.sql"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

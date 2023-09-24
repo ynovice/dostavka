@@ -33,6 +33,10 @@ public class Order {
     @JoinColumn(referencedColumnName = "id")
     private User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id", nullable = false)
+    private Address address;
+
     public void updateTotalItems(int difference) {
         totalItems += difference;
     }

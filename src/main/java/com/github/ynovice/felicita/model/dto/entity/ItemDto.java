@@ -23,6 +23,7 @@ public class ItemDto {
     private ZonedDateTime createdAt;
     private Integer price;
     private Boolean active;
+    private String volume;
     private Integer quantity;
 
     public static ItemDto fromEntity(Item item) {
@@ -52,6 +53,7 @@ public class ItemDto {
         dto.setCreatedAt(item.getCreatedAt());
         dto.setPrice(item.getPrice());
         dto.setActive(item.getActive());
+        dto.setVolume(item.getVolume());
         dto.setQuantity(item.getQuantity());
 
         return dto;

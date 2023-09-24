@@ -1,5 +1,6 @@
 package com.github.ynovice.felicita.service;
 
+import com.github.ynovice.felicita.model.dto.request.OrderAllItemsInCartRequestDto;
 import com.github.ynovice.felicita.model.entity.Order;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface OrderService {
 
-    Order orderAllItemsInCart(@NonNull OAuth2User oAuth2User);
+    Order orderAllItemsInCart(OrderAllItemsInCartRequestDto requestDto, @NonNull OAuth2User oAuth2User);
 
     void cancelById(Long id, @NonNull OAuth2User oAuth2User);
 

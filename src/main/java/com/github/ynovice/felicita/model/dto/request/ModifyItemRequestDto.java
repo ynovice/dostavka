@@ -16,5 +16,6 @@ public class ModifyItemRequestDto {
     private List<Long> categoriesIds;
 
     private Integer price;
+    private String volume;
     private Integer quantity;
 }

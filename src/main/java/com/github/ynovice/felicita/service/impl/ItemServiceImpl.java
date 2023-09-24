@@ -198,6 +198,7 @@ public class ItemServiceImpl implements ItemService {
         item.setDescription(dto.getDescription());
 
         item.setPrice(dto.getPrice());
+        item.setVolume(dto.getVolume());
         item.setQuantity(dto.getQuantity());
 
         bidirectionalAttachImagesToItem(dto.getImagesIds(), item);

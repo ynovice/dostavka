@@ -3,11 +3,9 @@ package com.github.ynovice.felicita.service.impl;
 import com.github.ynovice.felicita.exception.BadRequestException;
 import com.github.ynovice.felicita.exception.NotAuthorizedException;
 import com.github.ynovice.felicita.exception.NotFoundException;
+import com.github.ynovice.felicita.model.dto.request.OrderAllItemsInCartRequestDto;
 import com.github.ynovice.felicita.model.entity.*;
-import com.github.ynovice.felicita.repository.CartEntryRepository;
-import com.github.ynovice.felicita.repository.CartRepository;
-import com.github.ynovice.felicita.repository.OrderEntryRepository;
-import com.github.ynovice.felicita.repository.OrderRepository;
+import com.github.ynovice.felicita.repository.*;
 import com.github.ynovice.felicita.service.CartService;
 import com.github.ynovice.felicita.service.ItemService;
 import com.github.ynovice.felicita.service.OrderService;
@@ -39,18 +37,27 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final CartEntryRepository cartEntryRepository;
     private final OrderEntryRepository orderEntryRepository;
+    private final AddressRepository addressRepository;
 
     @Override
     @Transactional
-    public Order orderAllItemsInCart(@NonNull OAuth2User oAuth2User) {
+    public Order orderAllItemsInCart(OrderAllItemsInCartRequestDto requestDto, @NonNull OAuth2User oAuth2User) {
 
+        User user = userService.getUser(oAuth2User);
         Cart cart = cartService.getByPrincipal(oAuth2User);
 
         if(cart.getTotalItems() == 0) {
             throw new BadRequestException("Ваша корзина пуста");
         }
 
-        Order order = createAndLinkOrder(cart);
+        Address address = addressRepository.findById(requestDto.getAddressId())
+                .orElseThrow(() -> new BadRequestException("Выбранный адрес не существует"));
+
+        if(!address.getUser().equals(user)) {
+            throw new NotAuthorizedException("Вы не можете выбрать чужой адрес");
+        }
+
+        Order order = createAndLinkOrder(cart, address);
 
         cart.setTotalItems(0);
         cart.setTotalPrice(0);
@@ -147,7 +154,7 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private Order createAndLinkOrder(@NonNull Cart cart) {
+    private Order createAndLinkOrder(@NonNull Cart cart, Address address) {
 
         User user = cart.getUser();
 
@@ -156,6 +163,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalPrice(cart.getTotalPrice());
         order.setTotalItems(cart.getTotalItems());
         order.setCreatedAt(ZonedDateTime.now());
+        order.setAddress(address);
         order.setUser(user);
 
         user.getOrders().add(order);

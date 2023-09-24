@@ -1,6 +1,7 @@
 package com.github.ynovice.felicita.controller;
 
 import com.github.ynovice.felicita.model.dto.entity.OrderDto;
+import com.github.ynovice.felicita.model.dto.request.OrderAllItemsInCartRequestDto;
 import com.github.ynovice.felicita.model.dto.response.OrdersPageDto;
 import com.github.ynovice.felicita.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,10 @@ public class OrderController {
 
     @Secured("ROLE_USER")
     @PostMapping
-    public ResponseEntity<OrderDto> orderAllItemsInCart(@AuthenticationPrincipal OAuth2User principal) {
+    public ResponseEntity<OrderDto> orderAllItemsInCart(@RequestBody OrderAllItemsInCartRequestDto requestDto,
+                                                        @AuthenticationPrincipal OAuth2User principal) {
         return ResponseEntity.ok(
-                OrderDto.fromEntity(orderService.orderAllItemsInCart(principal))
+                OrderDto.fromEntity(orderService.orderAllItemsInCart(requestDto, principal))
         );
     }
 

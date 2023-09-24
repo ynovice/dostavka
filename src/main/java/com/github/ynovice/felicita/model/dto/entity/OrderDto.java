@@ -14,6 +14,7 @@ public class OrderDto extends OrderShortInfoDto {
     private static final String DATE_TIME_PRESENTATION_FORMAT = "dd.MM.YYYY в HH:mm";
 
     private List<OrderEntryDto> entries;
+    private AddressDto address;
 
     public static OrderDto fromEntity(Order order) {
 
@@ -32,6 +33,7 @@ public class OrderDto extends OrderShortInfoDto {
                 order.getCreatedAt().format(DateTimeFormatter.ofPattern(DATE_TIME_PRESENTATION_FORMAT))
         );
         dto.setOwner(UserDto.fromEntity(order.getUser()));
+        dto.setAddress(AddressDto.fromEntity(order.getAddress()));
 
         return dto;
     }
