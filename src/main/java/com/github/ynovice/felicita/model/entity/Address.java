@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "addresses")
@@ -32,6 +33,10 @@ public class Address {
     @JoinColumn(referencedColumnName = "id")
     private User user;
 
-    @OneToOne(mappedBy = "address")
-    private Order order;
+    @OneToMany(mappedBy = "address")
+    private List<Order> orders;
+
+    public boolean hasOrders() {
+        return orders != null && !orders.isEmpty();
+    }
 }

@@ -53,7 +53,12 @@ public class AddressServiceImpl implements AddressService {
         }
 
         user.getAddresses().remove(address);
+        address.setUser(null);
+
+        if(!address.hasOrders()) {
+            addressRepository.delete(address);
+        }
+
         userService.save(user);
-        addressRepository.delete(address);
     }
 }
