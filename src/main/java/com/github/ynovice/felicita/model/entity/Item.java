@@ -50,6 +50,9 @@ public class Item {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column(length = 20)
+    private String volume;
+
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CartEntry> cartEntries;
 
